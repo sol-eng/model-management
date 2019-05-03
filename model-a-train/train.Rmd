@@ -1,5 +1,7 @@
 ---
 title: "Financial Modeling in RStudio"
+resource_files:
+- config.yml
 output: html_notebook
 ---
 
@@ -7,14 +9,16 @@ output: html_notebook
 
 This model will predict the probability that a credit card holder will default on their payment given their payment history and demographic information.
 
-```{r}
+```{r message=FALSE}
 library(readxl)
 library(xgboost)
 library(caTools)
+library(config)
 ```
 
 ```{r}
-MODEL_ID <- "model-a"
+# Load config file
+model <- get("model")
 ```
 
 
@@ -50,13 +54,14 @@ bst <- xgboost(data = x_train,
                eta = 1,
                nthread = 2,
                nrounds = 2,
+               booster = "gbtree",
                objective = "binary:logistic")
 ```
 
 Serialize the trained model to a file for later use:
 
 ```{r}
-xgb.save(bst, paste0("../", MODEL_ID, "-predict/model/xgb.model"))
+xgb.save(bst, paste0(model$path_prefix, model$id, model$path_suffix))
 ```
 
 Generate predictions on the test data:
