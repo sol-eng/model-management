@@ -41,7 +41,7 @@ get_results <- reactive({
 })
 ```
 
-Row
+Row {data-height=200}
 -------------------------------------
 
 ### Inputs
@@ -58,7 +58,11 @@ numericInput("frequency",
              10,
              min = 1,
              max = 100)
+```
 
+### Payment History
+
+```{r}
 radioButtons(
   "payment_history",
   label = h3("Payment History"),
