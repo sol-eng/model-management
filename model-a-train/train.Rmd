@@ -1,5 +1,5 @@
 ---
-title: "Financial Modeling in RStudio"
+title: "Credit Risk Modeling in RStudio"
 resource_files:
 - config.yml
 output: html_notebook
@@ -9,6 +9,8 @@ output: html_notebook
 
 This model will predict the probability that a credit card holder will default on their payment given their payment history and demographic information.
 
+Load libraries:
+
 ```{r message=FALSE}
 library(readxl)
 library(xgboost)
@@ -16,11 +18,15 @@ library(caTools)
 library(config)
 ```
 
+Load config file:
+
 ```{r}
-# Load config file
-model <- get("model")
+model_config <- get("model_config")
 ```
 
+This notebook refers to **`r model_config$id`**.
+
+### Load data
 
 Load the data and view its contents:
 
@@ -30,7 +36,9 @@ df <- read_excel("data/default-of-credit-card clients.xls", skip = 1)
 df
 ```
 
-Split the data set into test and training portions:
+### Split data into training and testing sets
+
+Split the data set into 80% training and 20% testing portions:
 
 ```{r warning=FALSE}
 set.seed(123)
@@ -45,6 +53,8 @@ x_test <- test[,-25]
 y_test  <- test[, 25, drop=FALSE]
 ```
 
+### Train model
+
 Train the model using a binary classification algoritm:
 
 ```{r}
@@ -58,37 +68,52 @@ bst <- xgboost(data = x_train,
                objective = "binary:logistic")
 ```
 
+### Serialize model
+
 Serialize the trained model to a file for later use:
 
 ```{r}
-xgb.save(bst, paste0(model$path_prefix, model$id, model$path_suffix))
+model_save_path = paste0(model_config$path_prefix, model_config$id, model_config$path_suffix)
+xgb.save(bst, model_save_path)
 ```
 
-Generate predictions on the test data:
+### Generate model predictions
+
+Generate model predictions on the test data:
 
 ```{r}
 pred <- predict(bst, x_test)
 ```
 
+### Score model
+
 Calculate the accuracy of the model:
 
 ```{r}
 err <- mean(as.numeric(pred > 0.5) != y_test)
-print(paste("test-accuracy=", 1-err))
+print(paste("Test Accuracy =", 1-err))
 ```
+
+### Test model predictions
 
 Generate a prediction for an account that we know has a good payment history:
 
 ```{r}
 test_data <- matrix(c(35, 500000, 1, 1, 1, 58, -2, -2, -2, -2, -2, -2, 13709, 5006, 31130, 3180, 0, 5293, 5006, 31178, 3180, 0, 5293, 768), nrow = 1)
-pred <- predict(bst, test_data)
-pred
+pred_good <- predict(bst, test_data)
+pred_good
 ```
+
+This account has a `r pred_good` probability of defaulting on their payment.
+
+---
 
 Generate a prediction for an account that we know defaults on their payment:
 
 ```{r}
 test_data <- matrix(c(1, 20000, 2, 2, 1, 24, 2, 2, -1, -1, -2, -2, 3913, 3102, 689, 0, 0, 0, 0, 689, 0, 0, 0, 0), nrow = 1)
-pred <- predict(bst, test_data)
-pred
+pred_bad <- predict(bst, test_data)
+pred_bad
 ```
+
+This account has a `r pred_bad` probability of defaulting on their payment.

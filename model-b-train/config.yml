@@ -1,11 +1,11 @@
 default:
-  model:
+  model_config:
     id: "model-b"
     path_prefix: "../"
     path_suffix: "-predict/model/xgb.model"
 
 rsconnect:
-  model:
+  model_config:
     id: "model-b"
     path_prefix: "./"
     path_suffix: ".xgb.model"
