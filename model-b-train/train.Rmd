@@ -68,6 +68,13 @@ bst <- xgboost(data = x_train,
                objective = "binary:logistic")
 ```
 
+Show the most important factors and their weights:
+
+```{r}
+imp_matrix <- xgb.importance(feature_names = colnames(x_train), model = bst)
+xgb.plot.importance(importance_matrix = imp_matrix)
+```
+
 ### Serialize model
 
 Serialize the trained model to a file for later use:
