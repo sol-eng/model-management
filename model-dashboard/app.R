@@ -2,7 +2,7 @@ library(ggplot2)
 library(httr)
 library(shiny)
 
-model_endpoint <- "https://colorado.rstudio.com/rsc/model-management/model-endpoint/predict"
+model_endpoint <- "https://colorado.rstudio.com/rsc/model-management/model-router/predict"
 model_inputs <- "35,500000,1,1,1,58,-2,-2,-2,-2,-2,-2,13709,5006,31130,3180,0,5293,5006,31178,3180,0,5293,768"
 
 ui <- fluidPage(
