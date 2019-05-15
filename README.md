@@ -16,7 +16,7 @@ history of various customers and whether they defaulted/missed a payment on
 their credit accounts.
 
 The example projects include model training notebooks, REST APIs serving
-predictions, REST API traffic router, and a Shiny app to verify API results.
+predictions, a REST API traffic router, and a Shiny app to verify API results.
 
 ## RStudio Professional Products
 
