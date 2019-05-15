@@ -84,19 +84,13 @@ model_save_path = paste0(model_config$path_prefix, model_config$id, model_config
 xgb.save(bst, model_save_path)
 ```
 
-### Generate model predictions
+### Model Testing
 
-Generate model predictions on the test data:
+Generate model predictions on the test data and calculate the accuracy of the
+model:
 
 ```{r}
 pred <- predict(bst, x_test)
-```
-
-### Score model
-
-Calculate the accuracy of the model:
-
-```{r}
 err <- mean(as.numeric(pred > 0.5) != y_test)
 print(paste("Test Accuracy =", 1-err))
 ```
