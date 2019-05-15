@@ -9,6 +9,7 @@ runtime: shiny
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(ggplot2)
+library(ggthemes)
 library(httr)
 library(tibble)
 
@@ -18,25 +19,33 @@ get_results <- reactive({
   
   invalidateLater(input$frequency * 1000, session = getDefaultReactiveDomain())
   
-  model_inputs <- paste0("35,500000,1,1,1,58,", strrep(paste0(input$payment_history, ","), 6), "13709,5006,31130,3180,0,5293,5006,31178,3180,0,5293,768")
+  if (input$payment_history == 1) {
+    payment_months <- c(-1, -1, -1)
+  } else if (input$payment_history == 2) {
+    payment_months <- c(2, 3, 4)
+  } else if (input$payment_history == 3) {
+    payment_months <- c(7, 8, 9)
+  }
   
-  print(model_inputs)
-  
-  results <- data.frame(matrix(ncol = 2, nrow = 0))
+  results <- data.frame(matrix(ncol = 3, nrow = 0))
+  colnames(results) <- c("prediction", "model", "time")
   for (i in c(1:input$hits)){
+    months <- sample(payment_months, 1)
+    payment <- strrep(paste0(months, ","), 6)
+    model_inputs <- paste0("35,500000,1,1,1,58,", payment, "13709,5006,31130,3180,0,5293,5006,31178,3180,0,5293,768")
+    
     start_time <- proc.time()
     r <- POST(model_endpoint,
               body = list(input = model_inputs),
               encode = "json")
     time <- proc.time() - start_time
-    result <- unlist(content(r))
-    new_row <- data.frame(result, time[3])
+    
+    result <- content(r)
+    new_row <- data.frame(result$prediction, result$model, time[3])
+    colnames(new_row) <- c("prediction", "model", "time")
     results <- rbind(results, new_row)
-    # add_row(results, Prediction = result, Time = time)
-    # results$time[i] <- time
   }
   rownames(results) <- 1:nrow(results)
-  colnames(results) <- c("Prediction", "Time")
   results
 })
 ```
@@ -67,11 +76,10 @@ radioButtons(
   "payment_history",
   label = h3("Payment History"),
   choices = list(
-    "On Time" = -1,
-    "2 Months Late" = 2,
-    "6 Months Late" = 6
-  ),
-  selected = -1
+    "On Time" = 1,
+    "2 to 4 Months Late" = 2,
+    "7 to 9 Months Late" = 3
+  )
 )
 ```
 
@@ -82,7 +90,9 @@ Row
 
 ```{r}
 renderValueBox({
-  valueBox(input$hits, icon = "fa-server", color = "#009E73")
+  valueBox(input$hits,
+           icon = "fa-server",
+           color = "#89AAE6")
 })
 ```
 
@@ -91,7 +101,31 @@ renderValueBox({
 ```{r}
 renderValueBox({
   results <- get_results()
-  valueBox(round(mean(results$Time), 3), icon = "fa-clock", color = "#009E73")
+  valueBox(paste0(round(mean(results$time), 2), " ms"),
+           icon = "fa-clock",
+           color = "#3685B5")
+})
+```
+
+### Model A Average Probability
+
+```{r}
+renderValueBox({
+  results <- get_results()
+  valueBox(round(mean(results$prediction[results$model == "model-a"]), 2),
+           icon = "fa-clock",
+           color = "#0471A6")
+})
+```
+
+### Model B Average Probability
+
+```{r}
+renderValueBox({
+  results <- get_results()
+  valueBox(round(mean(results$prediction[results$model == "model-b"]), 2),
+           icon = "fa-clock",
+           color = "#0471A6")
 })
 ```
 
@@ -104,9 +138,12 @@ Row
 ```{r}
   renderPlot({
     results <- get_results()
-    ggplot(results, aes(as.numeric(rownames(results)), Prediction)) +
-      geom_point() +
+    ggplot(results, aes(as.numeric(rownames(results)), prediction,
+                        color = model)) +
+      geom_point(size = 5) +
+      ylim(0, 1) +
       xlab("API Request Number") +
-      ylab("Probability of Default on Credit Payment")
+      ylab("Probability of Default on Credit Payment") +
+      theme_clean(base_size = 16)
   })
 ```
