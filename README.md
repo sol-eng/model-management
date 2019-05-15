@@ -15,6 +15,9 @@ The data set used in this example involves demographic information and payment
 history of various customers and whether they defaulted/missed a payment on
 their credit accounts.
 
+The example projects include model training notebooks, REST APIs serving
+predictions, REST API traffic router, and a Shiny app to verify API results.
+
 ## RStudio Professional Products
 
 RStudio Server Pro can be used with machine learning packages to develop, train,
