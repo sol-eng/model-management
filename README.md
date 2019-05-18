@@ -15,8 +15,14 @@ The data set used in this example involves demographic information and payment
 history of various customers and whether they defaulted/missed a payment on
 their credit accounts.
 
-The example projects include model training notebooks, REST APIs serving
-predictions, a REST API traffic router, and a Shiny app to verify API results.
+The example projects include:
+
+* [Model A - Model Training Notebook](https://colorado.rstudio.com/rsc/model-management/model-a-train/) [[login]](https://colorado.rstudio.com/rsc/connect/#/apps/2378)
+* [Model A - REST API Serving Model Predictions](https://colorado.rstudio.com/rsc/model-management/model-a-predict/) [[login]](https://colorado.rstudio.com/rsc/connect/#/apps/2379)
+* [Model B - Model Training Notebook](https://colorado.rstudio.com/rsc/model-management/model-b-train/) [[login]](https://colorado.rstudio.com/rsc/connect/#/apps/2380)
+* [Model B - REST API Serving Model Predictions](https://colorado.rstudio.com/rsc/model-management/model-b-predict/) [[login]](https://colorado.rstudio.com/rsc/connect/#/apps/2381)
+* [REST API Traffic Router for A/B Testing](https://colorado.rstudio.com/rsc/model-management/model-router/) [[login]](https://colorado.rstudio.com/rsc/connect/#/apps/2410)
+* [Interactive App to Query and Verify Model Results](https://colorado.rstudio.com/rsc/model-management/model-dashboard/) [[login]](https://colorado.rstudio.com/rsc/connect/#/apps/2411)
 
 ## RStudio Professional Products
 
