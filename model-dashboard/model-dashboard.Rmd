@@ -1,6 +1,6 @@
 ---
 title: "Model Dashboard"
-output: 
+output:
   flexdashboard::flex_dashboard:
     orientation: rows
 runtime: shiny
@@ -16,9 +16,9 @@ library(tibble)
 model_endpoint <- "https://colorado.rstudio.com/rsc/model-management/model-router/predict"
 
 get_results <- reactive({
-  
+
   invalidateLater(input$frequency * 1000, session = getDefaultReactiveDomain())
-  
+
   if (input$payment_history == 1) {
     payment_months <- c(-1, -1, -1)
   } else if (input$payment_history == 2) {
@@ -26,20 +26,20 @@ get_results <- reactive({
   } else if (input$payment_history == 3) {
     payment_months <- c(7, 8, 9)
   }
-  
+
   results <- data.frame(matrix(ncol = 3, nrow = 0))
   colnames(results) <- c("prediction", "model", "time")
   for (i in c(1:input$hits)){
     months <- sample(payment_months, 1)
     payment <- strrep(paste0(months, ","), 6)
     model_inputs <- paste0("35,500000,1,1,1,58,", payment, "13709,5006,31130,3180,0,5293,5006,31178,3180,0,5293,768")
-    
+
     start_time <- proc.time()
     r <- POST(model_endpoint,
               body = list(input = model_inputs),
               encode = "json")
     time <- proc.time() - start_time
-    
+
     result <- content(r)
     new_row <- data.frame(result$prediction, result$model, time[3])
     colnames(new_row) <- c("prediction", "model", "time")
@@ -101,7 +101,7 @@ renderValueBox({
 ```{r}
 renderValueBox({
   results <- get_results()
-  valueBox(paste0(round(mean(results$time), 2), " ms"),
+  valueBox(paste0(round(mean(results$time) * 1000, 0), " ms"),
            icon = "fa-clock",
            color = "#3685B5")
 })
@@ -131,7 +131,7 @@ renderValueBox({
 
 Row
 -------------------------------------
-    
+
 ### Model Diagnostics
 
 
